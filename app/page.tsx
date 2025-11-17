@@ -19,7 +19,6 @@ const NEYNAR_API_KEY = '20FEAD29-CB14-438B-8309-868BA126B594';
 const GAME_URL = 'https://mindgame-omega.vercel.app/';
 const BLOCK_EXPLORER_URL = 'https://basescan.org';
 
-// Add your ABI here
 const ABI: any[] = [{"inputs":[{"internalType":"address","name":"_bonkToken","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"gameId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"score","type":"uint256"}],"name":"GameEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"player","type":"address"},{"indexed":true,"internalType":"uint256","name":"gameId","type":"uint256"}],"name":"GameStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"gameId","type":"uint256"}],"name":"RewardClaimed","type":"event"},{"inputs":[],"name":"MAX_DAILY_GAMES","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_SCORE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REWARD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"allPlayers","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"bonkToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"gameId","type":"uint256"}],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"dailyPlays","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"gameId","type":"uint256"},{"internalType":"uint256","name":"score","type":"uint256"}],"name":"endGame","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"games","outputs":[{"internalType":"address","name":"player","type":"address"},{"internalType":"bool","name":"ended","type":"bool"},{"internalType":"uint256","name":"score","type":"uint256"},{"internalType":"bool","name":"claimed","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"n","type":"uint256"}],"name":"getTopPlayers","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"lastDay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"nextGameId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"startGame","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userTotalScore","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
 const colors = [
@@ -90,16 +89,16 @@ export default function Home() {
 
     const initSDK = async () => {
       try {
-        // Import from installed npm packages
+        // Import SDK FIRST
+        const { sdk } = await import('@farcaster/miniapp-sdk');
+        
+        // Then import wagmi and viem
         const {
           createConfig, connect, readContract, writeContract, getAccount
         } = await import('@wagmi/core');
         const { base } = await import('@wagmi/core/chains');
         const { farcasterMiniApp } = await import('@farcaster/miniapp-wagmi-connector');
         const { createPublicClient, http, decodeEventLog } = await import('viem');
-
-        // Initialize SDK with mock if not available
-        const sdk = { actions: { ready: async (opts?: any) => {}, addMiniApp: async () => {}, composeCast: async (opts?: any) => {} } };
 
         const config = createConfig({
           chains: [base],
@@ -111,7 +110,6 @@ export default function Home() {
           transport: http()
         });
 
-        // Store imports for later use
         window.sdk = sdk;
         window.config = config;
         window.publicClient = publicClient;
@@ -123,14 +121,19 @@ export default function Home() {
         configRef.current = config;
         publicClientRef.current = publicClient;
 
+        // CRITICAL FIX: Properly call and await sdk.actions.ready()
         try {
-          await sdk.actions?.ready({ disableNativeGestures: true });
-        } catch (e) {
-          console.log("SDK ready not available:", e);
+          console.log("Calling sdk.actions.ready()...");
+          await sdk.actions.ready({ disableNativeGestures: true });
+          console.log("✓ Farcaster MiniApp SDK ready - splash screen should dismiss");
+        } catch (readyErr) {
+          console.warn("SDK ready() warning:", readyErr);
+          // Don't throw - allow app to continue even if ready() fails
         }
-        console.log("Farcaster MiniApp ready");
+
         setMessage("Ready to connect!");
 
+        // Handle initial setup
         const hasSeenRules = localStorage.getItem('hasSeenRules');
         if (!hasSeenRules) {
           setTimeout(() => setShowRules(true), 300);
@@ -147,9 +150,9 @@ export default function Home() {
           }
         }
       } catch (err) {
-        console.error("SDK ready error:", err);
-        setMessage("SDK initialization failed");
-        showToastMsg("Failed to initialize. Try reloading.");
+        console.error("SDK initialization error:", err);
+        setMessage("SDK initialization failed - but you can still play!");
+        showToastMsg("Failed to fully initialize SDK. Try reloading.");
       }
     };
 
@@ -528,8 +531,7 @@ export default function Home() {
           showToastMsg("Saving your score on-chain...");
           setMessage(`Submitting score ${round} for game ${currentGameId}...`);
 
-          // @ts-ignore - dynamic wagmi import
-          const { writeContract, readContract } = await import('@wagmi/core');
+          const { writeContract, readContract } = window.wagmi;
 
           const txResponse = await writeContract(configRef.current, {
             address: CONTRACT_ADDRESS,
@@ -587,8 +589,7 @@ export default function Home() {
     }
 
     try {
-      // @ts-ignore - dynamic wagmi import
-      const { readContract, writeContract } = await import('@wagmi/core');
+      const { readContract, writeContract } = window.wagmi;
 
       const gameData = await readContract(configRef.current, {
         address: CONTRACT_ADDRESS,
@@ -694,10 +695,10 @@ Built by @pavankumarkr. `,
     }
   };
 
- const loadLeaderboard = async () => {
+  const loadLeaderboard = async () => {
     try {
       const { readContract } = window.wagmi;
-    const [players, scores] = await readContract(configRef.current, {
+      const [players, scores] = await readContract(configRef.current, {
         address: CONTRACT_ADDRESS,
         abi: ABI,
         functionName: 'getTopPlayers',
@@ -746,7 +747,8 @@ Built by @pavankumarkr. `,
       setLeaderboard([]);
     }
   };
- return (
+
+  return (
     <>
       {showRules && (
         <div className="rules-overlay">
@@ -757,7 +759,7 @@ Built by @pavankumarkr. `,
             <div className="rules-content">
               <p>
                 <span className="rules-bullet">•</span>
-                <span className="rules-text"><strong>You get 3 games per day.</strong> That&apos;s right, <strong>THREE.</strong> No more, no less. Don&apos;t waste &apos;em trying to be smart. Just play, loser 😎</span>
+                <span className="rules-text"><strong>You get 3 games per day.</strong> That's right, <strong>THREE.</strong> No more, no less. Don't waste 'em trying to be smart. Just play, loser 😎</span>
               </p>
               <p>
                 <span className="rules-bullet">•</span>
@@ -769,7 +771,7 @@ Built by @pavankumarkr. `,
               </p>
               <p>
                 <span className="rules-bullet">•</span>
-                <span className="rules-text"><strong>Don&apos;t make it to Round 7?</strong> Oof. Tough luck. Your score gets <strong>thrown onto the leaderboard</strong> so everyone can laugh — or cheer, if they&apos;re nice (they&apos;re not).</span>
+                <span className="rules-text"><strong>Don't make it to Round 7?</strong> Oof. Tough luck. Your score gets <strong>thrown onto the leaderboard</strong> so everyone can laugh — or cheer, if they're nice (they're not).</span>
               </p>
               <p>
                 <span className="rules-bullet">•</span>
