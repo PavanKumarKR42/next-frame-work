@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   const manifest = {
-    accountAssociation: {
-      header: "eyJmaWQiOjI4NDcxMywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDBDN2FmZDk5OEY1MDY5ZkM1RTMxZWVmREM2RkZBODdlMzExYWIyM0MifQ",
-      payload: "eyJkb21haW4iOiJtaW5kZ2FtZS1vbWVnYS52ZXJjZWwuYXBwIn0",
-      signature: "MHhjYzAzNGUxMjk3MzUxZDMzM2Y1NTVjZWZiNjBiNGU2MDIzN2ZlYWU1YjgxYWU4OTAyNGZmNDc1OWE4Mjc0NzYxNTIyMjdjMTIyZGVkOTUzN2YzYzA5MjUzY2I1NjMxMTA3M2NkM2ViMjkyY2VkOTYzNmI4NzNkMGE0ZjVmZGFjNTFi"
-    },
+    "accountAssociation": {
+    "header": "eyJmaWQiOjI4NDcxMywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDBDN2FmZDk5OEY1MDY5ZkM1RTMxZWVmREM2RkZBODdlMzExYWIyM0MifQ",
+    "payload": "eyJkb21haW4iOiJiYXNlLWFwcDEudmVyY2VsLmFwcCJ9",
+    "signature": "8HuCbXG7VGDdzjuFF6s2k8w+tPRsd9zUht4xIzGxo2Bf8Rljcr7C7GBJyfZ+JTlV95GGWbrEOT5Ukk7r3PqkJRw="
+  },
     frame: {
       version: "1",
       name: "BRAIN.exe!",
