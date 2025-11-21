@@ -19,7 +19,7 @@ export const metadata: Metadata = {
         action: {
           type: "launch_frame",
           name: "TYBG Dice",
-          url: "https://dice-game-nine-ruby.vercel.app/",
+          url: "https://next-frame-work.vercel.app/",
           splashImageUrl: "https://dice-game-nine-ruby.vercel.app/splash.png",
           splashBackgroundColor: "#7c3aed"
         }
