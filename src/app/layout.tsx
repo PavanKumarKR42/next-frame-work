@@ -4,7 +4,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'TYBG Dice Game',
   description: 'Predict & Win 1 TYBG Token on Base',
-  metadataBase: new URL('https://dice-game-nine-ruby.vercel.app/'),
+  metadataBase: new URL('https://next-frame-work.vercel.app/'),
   openGraph: {
     title: 'TYBG Dice Game',
     description: 'Predict & Win 1 TYBG Token on Base',
