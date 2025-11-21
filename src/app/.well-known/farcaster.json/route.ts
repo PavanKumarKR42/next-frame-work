@@ -11,7 +11,7 @@ export async function GET() {
       "version": "1",
       "name": "TYBG Dice Game",
       "iconUrl": "https://dice-game-nine-ruby.vercel.app/splash.png",
-      "homeUrl": "https://dice-game-nine-ruby.vercel.app/",
+      "homeUrl": "https://next-frame-work.vercel.app/",
       "imageUrl": "https://dice-game-nine-ruby.vercel.app/preview.png",
       "buttonTitle": "Play Dice Game!",
       "splashImageUrl": "https://dice-game-nine-ruby.vercel.app/splash.png",
