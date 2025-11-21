@@ -2,27 +2,26 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Mind Color Sequence',
-  description: 'Memory game on Base - Earn BONK tokens',
-  metadataBase: new URL('https://mindgame-omega.vercel.app'),
+  title: 'TYBG Dice Game',
+  description: 'Predict & Win 1 TYBG Token on Base',
+  metadataBase: new URL('https://dice-game-nine-ruby.vercel.app/'),
   openGraph: {
-    title: 'Mind Color Sequence',
-    description: 'Memory game on Base - Earn BONK tokens',
-    images: ['/image.png'],
+    title: 'TYBG Dice Game',
+    description: 'Predict & Win 1 TYBG Token on Base',
+    images: ['/preview.png'],
   },
   other: {
     'fc:miniapp': JSON.stringify({
       version: "1",
-      imageUrl: "https://mindgame-omega.vercel.app/image.png",
-      splashImageUrl: "https://mindgame-omega.vercel.app/splash.png",
+      imageUrl: "https://dice-game-nine-ruby.vercel.app/preview.png",
       button: {
-        title: "BRAIN.exe!",
+        title: "PLAY DICE GAME",
         action: {
           type: "launch_frame",
-          name: "Mind Color Sequence",
-          url: "https://base-app1.vercel.app/",
-          splashImageUrl: "https://mindgame-omega.vercel.app/splash.png",
-          splashBackgroundColor: "#ffd753"
+          name: "TYBG Dice",
+          url: "https://dice-game-nine-ruby.vercel.app/",
+          splashImageUrl: "https://dice-game-nine-ruby.vercel.app/splash.png",
+          splashBackgroundColor: "#7c3aed"
         }
       }
     })
