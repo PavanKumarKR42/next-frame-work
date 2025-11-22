@@ -322,6 +322,19 @@ Try your luck now! 🍀`,
       >
         {theme === 'dark' ? '🌙' : '☀️'}
       </button>
+
+      {pfpUrl && (
+        <div className="profile-corner">
+          <img 
+            src={pfpUrl} 
+            alt="Profile" 
+            className="profile-pic-corner"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
+        </div>
+      )}
       
       <div className="container">
         <div className="header">
@@ -330,26 +343,6 @@ Try your luck now! 🍀`,
         </div>
 
         <div className="info-box">
-          {pfpUrl && (
-            <div className="profile-section">
-              <img 
-                src={pfpUrl} 
-                alt="Profile" 
-                className="profile-pic"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-              <div className="profile-info">
-                {userProfile && (
-                  <>
-                    <div className="profile-name">{userProfile.display_name || userProfile.username}</div>
-                    {userProfile.username && <div className="profile-username">@{userProfile.username}</div>}
-                  </>
-                )}
-              </div>
-            </div>
-          )}
           <div className="info-row">
             <span className="info-label">Chain:</span>
             <span className="info-value">Base</span>
@@ -434,6 +427,37 @@ Try your luck now! 🍀`,
       </div>
 
       <style jsx>{`
+        .profile-corner {
+          position: fixed;
+          top: 25px;
+          left: 25px;
+          z-index: 1000;
+        }
+
+        .profile-pic-corner {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          object-fit: cover;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          transition: all 0.3s ease;
+          cursor: pointer;
+        }
+
+        .profile-pic-corner:hover {
+          transform: scale(1.1);
+          border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        body.light-mode .profile-pic-corner {
+          border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        body.light-mode .profile-pic-corner:hover {
+          border-color: rgba(0, 0, 0, 0.4);
+        }
+
         .profile-section {
           display: flex;
           align-items: center;
