@@ -388,3 +388,36 @@ body.light-mode .info-box {
   border: 2px solid #ef4444;
   color: #ef4444;
 }
+
+/* Profile Picture Styles - Add this to your globals.css */
+
+.profile-corner {
+  position: fixed;
+  top: 25px;
+  left: 25px;
+  z-index: 1000;
+}
+
+.profile-pic-corner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.profile-pic-corner:hover {
+  transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+body.light-mode .profile-pic-corner {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .profile-pic-corner:hover {
+  border-color: rgba(0, 0, 0, 0.4);
+}
