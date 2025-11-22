@@ -22,6 +22,8 @@ export default function DiceGame() {
   // Function to fetch user profile from Neynar
   const fetchUserProfile = async (address: string) => {
     try {
+      console.log('🔍 Fetching profile for address:', address);
+      
       const response = await fetch(
         `https://api.neynar.com/v2/farcaster/user/bulk-by-address?addresses=${address}`,
         {
@@ -33,29 +35,42 @@ export default function DiceGame() {
         }
       );
 
+      console.log('📡 API Response status:', response.status);
+
       if (!response.ok) {
-        console.error('Neynar API error:', response.status);
+        console.error('❌ Neynar API error:', response.status);
+        const errorText = await response.text();
+        console.error('Error details:', errorText);
         return null;
       }
 
       const data = await response.json();
-      console.log('Neynar response:', data);
+      console.log('📦 Neynar full response:', data);
       
       // The response is an object where keys are addresses
       const lowerAddress = address.toLowerCase();
+      console.log('🔑 Looking for key:', lowerAddress);
+      console.log('🗝️ Available keys:', Object.keys(data));
+      
       const users = data[lowerAddress];
+      console.log('👥 Users found:', users);
       
       if (users && users.length > 0) {
         const user = users[0];
+        console.log('✅ User profile found:', user);
+        console.log('🖼️ PFP URL:', user.pfp_url);
+        
         setUserProfile(user);
         setPfpUrl(user.pfp_url || '');
-        console.log('User profile:', user);
+        
         return user;
+      } else {
+        console.log('⚠️ No users found for this address');
       }
       
       return null;
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('💥 Error fetching user profile:', error);
       return null;
     }
   };
@@ -330,9 +345,34 @@ Try your luck now! 🍀`,
             alt="Profile" 
             className="profile-pic-corner"
             onError={(e) => {
+              console.error('❌ Failed to load profile picture:', pfpUrl);
               (e.target as HTMLImageElement).style.display = 'none';
             }}
+            onLoad={() => {
+              console.log('✅ Profile picture loaded successfully!');
+            }}
           />
+        </div>
+      )}
+
+      {/* Debug info */}
+      {process.env.NODE_ENV === 'development' && (
+        <div style={{
+          position: 'fixed',
+          bottom: '10px',
+          left: '10px',
+          background: 'rgba(0,0,0,0.8)',
+          color: 'white',
+          padding: '10px',
+          fontSize: '12px',
+          borderRadius: '8px',
+          zIndex: 9999,
+          maxWidth: '300px',
+          wordBreak: 'break-all'
+        }}>
+          <div>PFP URL: {pfpUrl || 'Not set'}</div>
+          <div>Has Profile: {userProfile ? 'Yes' : 'No'}</div>
+          <div>Username: {userProfile?.username || 'N/A'}</div>
         </div>
       )}
       
