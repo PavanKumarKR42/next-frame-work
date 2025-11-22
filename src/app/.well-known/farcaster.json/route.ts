@@ -3,15 +3,15 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   const manifest = {
     "accountAssociation": {
-      "header": "eyJmaWQiOjI4NDcxMywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDBDN2FmZDk5OEY1MDY5ZkM1RTMxZWVmREM2RkZBODdlMzExYWIyM0MifQ",
-      "payload": "eyJkb21haW4iOiJkaWNlLWdhbWUtbmluZS1ydWJ5LnZlcmNlbC5hcHAifQ",
-      "signature": "0vFWclNz2A3SeB33mLQFTdkilc/MierA7H8KwA3lE1EGEAEeY4GO/0OvijFVJmRMU3hZOupgUSJD/hrjYT0NRxs="
-    },
+    "header": "eyJmaWQiOjI4NDcxMywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDBDN2FmZDk5OEY1MDY5ZkM1RTMxZWVmREM2RkZBODdlMzExYWIyM0MifQ",
+    "payload": "eyJkb21haW4iOiJmOGQ5MzI1Yy0xYmU2LTQ2YTQtOTZjZi0yOGRjMjY1YjgzMy52ZXJjZWwuYXBwIn0",
+    "signature": "KneZHsHI2x+NfPfVeGkY3weFuDmgHcPmy+oxY2XIm5pk9v4di+jBZdMt3XIh6E7e3oTKGiUaJi+axoB7wIe0lBs="
+  },
     "frame": {
       "version": "1",
       "name": "TYBG Dice Game",
       "iconUrl": "https://dice-game-nine-ruby.vercel.app/splash.png",
-      "homeUrl": "https://next-frame-work.vercel.app/",
+      "homeUrl": "https://f8d9325c-1be6-46a4-96cf-28dc265b833.vercel.app/",
       "imageUrl": "https://dice-game-nine-ruby.vercel.app/preview.png",
       "buttonTitle": "Play Dice Game!",
       "splashImageUrl": "https://dice-game-nine-ruby.vercel.app/splash.png",

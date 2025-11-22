@@ -14,6 +14,51 @@ export default function DiceGame() {
   const [showShare, setShowShare] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
   const [theme, setTheme] = useState('dark');
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [pfpUrl, setPfpUrl] = useState('');
+
+  const NEYNAR_API_KEY = '20FEAD29-CB14-438B-8309-868BA126B594'; // Replace with your API key
+
+  // Function to fetch user profile from Neynar
+  const fetchUserProfile = async (address: string) => {
+    try {
+      const response = await fetch(
+        `https://api.neynar.com/v2/farcaster/user/bulk-by-address?addresses=${address}`,
+        {
+          method: 'GET',
+          headers: {
+            'accept': 'application/json',
+            'api_key': NEYNAR_API_KEY
+          }
+        }
+      );
+
+      if (!response.ok) {
+        console.error('Neynar API error:', response.status);
+        return null;
+      }
+
+      const data = await response.json();
+      console.log('Neynar response:', data);
+      
+      // The response is an object where keys are addresses
+      const lowerAddress = address.toLowerCase();
+      const users = data[lowerAddress];
+      
+      if (users && users.length > 0) {
+        const user = users[0];
+        setUserProfile(user);
+        setPfpUrl(user.pfp_url || '');
+        console.log('User profile:', user);
+        return user;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
+    }
+  };
 
   useEffect(() => {
     // Load theme
@@ -58,7 +103,17 @@ export default function DiceGame() {
             const shortAddress = `${account.address.slice(0, 6)}...${account.address.slice(-4)}`;
             setWalletAddr(shortAddress);
             console.log('Wallet connected:', account.address);
-            showStatus(`✅ Connected: ${shortAddress}`, 'success');
+            
+            // Fetch user profile from Neynar
+            showStatus(`✅ Connected: ${shortAddress}. Fetching profile...`, 'success');
+            const profile = await fetchUserProfile(account.address);
+            
+            if (profile) {
+              showStatus(`✅ Welcome ${profile.username || profile.display_name || shortAddress}!`, 'success');
+            } else {
+              showStatus(`✅ Connected: ${shortAddress}`, 'success');
+            }
+            
             setTimeout(() => hideStatus(), 3000);
           } else {
             console.warn('No address found after connection attempt');
@@ -275,6 +330,26 @@ Try your luck now! 🍀`,
         </div>
 
         <div className="info-box">
+          {pfpUrl && (
+            <div className="profile-section">
+              <img 
+                src={pfpUrl} 
+                alt="Profile" 
+                className="profile-pic"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+              <div className="profile-info">
+                {userProfile && (
+                  <>
+                    <div className="profile-name">{userProfile.display_name || userProfile.username}</div>
+                    {userProfile.username && <div className="profile-username">@{userProfile.username}</div>}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
           <div className="info-row">
             <span className="info-label">Chain:</span>
             <span className="info-value">Base</span>
@@ -357,6 +432,64 @@ Try your luck now! 🍀`,
           Built with ❤️ | Follow: <a href="https://farcaster.xyz/yourname" target="_blank">@yourname</a>
         </div>
       </div>
+
+      <style jsx>{`
+        .profile-section {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px;
+          margin-bottom: 12px;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 12px;
+        }
+
+        .profile-pic {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          object-fit: cover;
+        }
+
+        .profile-info {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .profile-name {
+          font-weight: 700;
+          font-size: 16px;
+          color: #fff;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .profile-username {
+          font-size: 14px;
+          color: rgba(255, 255, 255, 0.7);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        body.light-mode .profile-name {
+          color: #1a1a1a;
+        }
+
+        body.light-mode .profile-username {
+          color: rgba(0, 0, 0, 0.6);
+        }
+
+        body.light-mode .profile-section {
+          background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .profile-pic {
+          border-color: rgba(0, 0, 0, 0.2);
+        }
+      `}</style>
     </>
   );
 }
